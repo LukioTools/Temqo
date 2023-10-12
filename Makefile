@@ -5,6 +5,9 @@ CC ?= c++				# FILL: the compiler
 CXX ?= c++				# FILL: the compiler
 CFLAGS := -Wall			# FILL: compile flags
 CXXFLAGS := -Wall 		# FILL: compile flags
+
+DEPENDENCIES := -lncurses
+
 DBGFLAGS := -g
 COBJFLAGS := $(CFLAGS) -c
 
@@ -34,4 +37,4 @@ exec:
 	
 .PHONY: build
 build: 
-	@ $(CXX) $(SRC_PATH)/$(TARGET_FILE) $(CXXFLAGS) -o $(BIN_PATH)/$(OUT_NAME)
+	@ $(CXX) $(SRC_PATH)/$(TARGET_FILE) $(DEPENDENCIES) $(CXXFLAGS) -o $(BIN_PATH)/$(OUT_NAME)
