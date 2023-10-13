@@ -21,14 +21,14 @@ if((boolean) != invert_bool){\
 };
 //positive macros
 #define check(boolean, errormsg) \
-    __check(boolean, errormsg, check_err_type, false);
+    __check(boolean, errormsg, check_err_type, false)
 #define check_err(boolean, errormsg, errtype) \
-    __check(boolean, errormsg, errtype, false);
+    __check(boolean, errormsg, errtype, false)
 //inverted macros
 #define check_not(boolean, errormsg) \
-    __check(boolean, errormsg, check_err_type, true);
+    __check(boolean, errormsg, check_err_type, true)
 #define check_err_not(boolean, errormsg, errtype) \
-    __check(boolean, errormsg, errtype, true);
+    __check(boolean, errormsg, errtype, true)
 
 //simple logging
 #define log(variable) \

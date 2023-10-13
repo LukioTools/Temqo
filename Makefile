@@ -1,8 +1,8 @@
 
 #thx /TheNetAdmin/ for the template
 # tool macros
-CC ?= c++				# FILL: the compiler
-CXX ?= c++				# FILL: the compiler
+CC ?= g++				# FILL: the compiler
+CXX ?= g++				# FILL: the compiler
 CFLAGS := -Wall			# FILL: compile flags
 CXXFLAGS := -Wall 		# FILL: compile flags
 
@@ -33,7 +33,7 @@ makedir:
 
 .PHONY: exec
 exec:
-	./$(BIN_PATH)/$(OUT_NAME)
+	@./$(BIN_PATH)/$(OUT_NAME)
 	
 .PHONY: build
 build: 
