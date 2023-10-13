@@ -44,9 +44,14 @@ int startup(){
     vis_ptr = stdscr; // window pointer for -> current allocated space for audio visualition (usually null)
     
 
-    auto width = getmaxx(stdscr);    
-    
-    log_ptr = subwin(stdscr, 2,width, 1,0);
+    get_max(width, height);
+
+    constexpr int text_size = 1;
+
+    log_ptr = subwin(stdscr, text_size, width, 0, 0);
+    ui_ptr = subwin(stdscr, text_size, width, height - text_size, 0);
+
+
     return 0;
 }
 
@@ -68,6 +73,9 @@ int main(int argc, char const *argv[])
     
     nc_log("Hello World (width:%i, height:%i)", width, height);
 
+
+    wprintw(ui_ptr, "Command: ");
+    wrefresh(ui_ptr);
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
