@@ -146,7 +146,7 @@ public:
             size_t width = round((double)(x*(i->size))/percent);
             if(width+pos > x){width = x-pos;}
 
-            i->window = newwin(height, width, height_offset, pos);
+            i->window = subwin(stdscr, height, width, height_offset, pos);
             char
                 a='|'       ,
                 b='|'       ,
@@ -163,7 +163,9 @@ public:
                 e='+'; f='+';
             }
             if(width+pos < x){
-                
+                b=' ';
+                f= height_offset == 0 ? '-' : ' ';
+                h='-';
             }
             //else if(height_offset+height >= y){ // last 
             //
@@ -263,7 +265,24 @@ int main(int argc, char const *argv[])
 
     wm.refresh();
 
-    getch();
+
+    while(auto c = wgetch(stdscr)){
+        wclear(stdscr);
+        wm.refresh();
+
+        refresh();
+        if(c == 'c') { //resize event
+            break;
+        }
+        else{
+            wclear(wm[0]->row[0]->window);
+            wprintw(wm[0]->row[0]->window, "c(%i): %c", c, c);
+            wrefresh(wm[0]->row[0]->window);
+
+
+        }
+
+    }
     stop();
     return 0;
 }
