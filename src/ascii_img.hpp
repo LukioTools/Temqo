@@ -1,4 +1,5 @@
 
+#include <cmath>
 #include <stdexcept>
 #include <sys/types.h>
 #if !defined(ASCII_IMG)
@@ -37,45 +38,43 @@ namespace ascii_img
             logvar(err);
             throw std::runtime_error(err);
         } 
-        auto x_step = (int) std::floor((double) ix/x);
-        auto y_step = (int) std::floor((double) iy/y);
+        auto x_step = (double) ix/x;
+        auto y_step = (double) iy/y;
 
         
 
 
         size_t iteration =0;
-        for (size_t j = 0; j < iy; j= j + (y_step))
-        {
 
-            for (size_t i = 0; i < ix; i = i + (x_step))
+
+        for (size_t j = 0; j < y; j++)
+        {
+            for (size_t i = 0; i < x; i++)
             {
-                logvar(i+j*iy);
+                double e = i*x_step+j*iy*y_step;
+                double idx = (double) e*4;
+                auto ptr = &img[(int) std::floor(idx)];
+                logvar(i);
+                logvar(ix);
+                logvar(iy);
                 logvar(x_step);
                 logvar(y_step);
-                auto ptr= &img[i+j*iy];
-                //x is width
-                //y is height
-                switch (channels)
-                {
-                case 1:
-                    out[iteration] = {ptr[0],ptr[0],ptr[0]};
-                    break;
-                case 2:
-                    out[iteration] = {ptr[0], ptr[1], ptr[0]};
-                    break;
-                case 3:
-                default:
-                    out[iteration] = {ptr[0], ptr[1], ptr[2]};
-                    break;
-                }
-
-                iteration++;
-                if(iteration >= x*y){
-                    goto exit;
-                }
+                logvar(e)
+                logvar(idx)
+                logvar(channels)
+                logvar(std::floor(idx));
+                out[iteration] = {
+                    ptr[0],
+                    ptr[1],
+                    ptr[2],
+                };
+                iteration ++;
             }
-            
         }
+        
+        
+        
+        
         
         exit:
 
