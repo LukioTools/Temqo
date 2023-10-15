@@ -31,7 +31,7 @@ if((boolean) != invert_bool){\
     __check(boolean, errormsg, errtype, true)
 
 //simple logging
-#define log(variable) \
+#define logv(variable) \
     std::cout << variable << std::endl;
 //simple variable name and value logging
 #define logvar(variable) \
