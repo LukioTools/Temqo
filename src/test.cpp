@@ -302,8 +302,6 @@ int main(int argc, char const *argv[])
         log_scr = log_element->window;
 
 
-        constexpr auto format = ":%s";
-
         switch (mode) {
             case InputMode::COMMAND:
             {
