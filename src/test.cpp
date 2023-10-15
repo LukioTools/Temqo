@@ -119,6 +119,17 @@ public:
         if(height < 0){
             height = y+height;
         }
+        
+
+        //logvar(height)
+        //logvar(height_offset)
+        //logvar(y);
+        
+
+
+
+        
+        
         if(vec.size() == 0) return -1;
         size_t 
             percent = 0,
@@ -136,9 +147,32 @@ public:
             if(width+pos > x){width = x-pos;}
 
             i->window = newwin(height, width, height_offset, pos);
-            pos += width;
-            box(i->window, 0, 0);
+            char
+                a='|'       ,
+                b='|'       ,
+                c=' '       ,
+                d='-'       ,
+                e='|'       ,
+                f='|'       ,
+                g='+'       ,
+                h='+'       
+            ;
+
+            if(height_offset == 0){ // first
+                c='-';
+                e='+'; f='+';
+            }
+            if(width+pos < x){
+                
+            }
+            //else if(height_offset+height >= y){ // last 
+            //
+            //}
+            else{
+            }
+            wborder(i->window, a, b, c, d, e, f, g, h);
             wrefresh(i->window);
+            pos += width;
         }
         return OK;
     }
@@ -222,6 +256,7 @@ int main(int argc, char const *argv[])
     wm[0]->row.append(7);
 
     wm[1]->row.append(6);
+    wm[1]->row.append(3);
     wm[1]->row.append(2);
 
     wm[2]->row.append(1);
