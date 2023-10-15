@@ -3,6 +3,13 @@
 
 #include <iostream>
 
+#if !defined(LOG_STREAM) 
+#define LOG_STREAM std::cout
+#endif
+
+#if !defined(ERR_STREAM) 
+#define ERR_STREAM std::cerr
+#endif
 
 //user can define the default error type if he choses so
 #if !defined(check_err_type)
@@ -32,10 +39,10 @@ if((boolean) != invert_bool){\
 
 //simple logging
 #define logv(variable) \
-    std::cout << variable << std::endl;
+    LOG_STREAM << variable << std::endl;
 //simple variable name and value logging
 #define logvar(variable) \
-    std::cout << #variable": " << variable << std::endl;
+    LOG_STREAM << #variable": " << variable << std::endl;
 
 
 

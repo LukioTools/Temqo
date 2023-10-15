@@ -20,6 +20,11 @@
     wprintw(LOG_WIN, format, __VA_ARGS__); \
     wrefresh(LOG_WIN);
 
+#define disp(window, format, ...) \
+    wclear(window); \
+    mvwprintw(window, 0, 0, format, __VA_ARGS__); \
+    wrefresh(window) \
+
 #define get_max(x, y ) int x, y; getmaxyx(stdscr, y, x)
 
 #define wisset(window) (window != nullptr && window != stdscr);
