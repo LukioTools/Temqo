@@ -44,12 +44,14 @@ namespace ascii_img
 
 
         size_t iteration =0;
-        for (size_t j = 0; j < iy; j= j + (y_step*channels))
+        for (size_t j = 0; j < iy; j= j + (y_step))
         {
 
-            for (size_t i = 0; i < ix; i = i + (x_step*channels))
+            for (size_t i = 0; i < ix; i = i + (x_step))
             {
                 logvar(i+j*iy);
+                logvar(x_step);
+                logvar(y_step);
                 auto ptr= &img[i+j*iy];
                 //x is width
                 //y is height
