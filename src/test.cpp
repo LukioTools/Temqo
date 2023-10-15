@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iterator>
 #include <new>
+#include <stdexcept>
 #include <vector>
 #include <ncurses.h>
 #include <glm/ext.hpp>
@@ -73,18 +74,48 @@ struct Element
 class Row
 {
 private:
+    std::vector<Element*> vec;
     
 public:
-    std::vector<Element*> vec;
 
     Row(){};
     Row(std::initializer_list<Element*> el):vec(el){};
     ~Row() = default;
 
 
+    void append(Element* el){
+        vec.push_back(el);
+    }
+    void append(size_t relative_size){
+        vec.push_back(new Element{Window(nullptr), relative_size});
+    }
+    void insert(Element* el, size_t position){
+        auto it = vec.begin();
+        std::advance(it, position);
+        if(it >= vec.end()) throw std::out_of_range("Insert was out of range");
+        vec.insert(it, el);
+    }
+
+    void insert(Element** el, size_t n, size_t position){
+        auto it = vec.begin();
+        std::advance(it, position);
+        if(it >= vec.end()) throw std::out_of_range("Insert was out of range");
+        vec.insert(it, el, el+n);
+    }
+
+    void resize(size_t idx, long pm){
+        vec[idx]->size+=pm;
+    }
+
+    Element* operator[](size_t idx){
+        return vec[idx];
+    }
+
+
 
     int refresh(long height, size_t height_offset){
-        get_max(x,y);
+        uint x,y;
+        getmaxyx(stdscr, y,x);
         if(height < 0){
             height = y+height;
         }
@@ -101,34 +132,67 @@ public:
 
         for (auto &&i : vec)
         {
-            size_t width = x*(i->size)/percent;
-            //logvar(height);
-            //logvar(width);
-            //logvar(height_offset);
-            //logvar(pos);
-            //logvar(i->window);
-            auto win = newwin(height, width, height_offset, pos);
-            //logvar(win)
-            i->window = win;
-            //logvar(i->window);
+            size_t width = round((double)(x*(i->size))/percent);
+            if(width+pos > x){width = x-pos;}
+
+            i->window = newwin(height, width, height_offset, pos);
             pos += width;
-            box(win, 0, 0);
-            wrefresh(win);
+            box(i->window, 0, 0);
+            wrefresh(i->window);
         }
         return OK;
     }
 };
+struct RowElement{
+    Row row;
+    uint size;
+    uint mod;
+};
 
+//aka just a bunch of rows
 class WindowManager
 {
 private:
-    
+    std::vector<RowElement*> rows;
 public:
-    std::vector<Row> rows;
+
+
+    void append(RowElement* re){
+        rows.push_back(re);
+    }
+
+    void refresh(){
+        uint x,y;
+        getmaxyx(stdscr, y,x);
+        size_t pos = 0, percent = 0; 
+        for (auto &&i : rows)
+        {
+            percent+=i->size;
+        }
+        for (auto &&i : rows)
+        {
+            size_t height = round((double)(y*i->size)/percent);
+            if(height+pos > y){height = y-pos;}
+            i->row.refresh(height, pos);
+            pos+=height;
+        }
+        
+    }
+
+    void resize(size_t idx, long pm){
+        rows[idx]->size+=pm;
+    }
+
+    RowElement* operator[](size_t idx){
+        return rows[idx];
+    }
+
+    size_t size(){
+        return rows.size();
+    }
     
     WindowManager() {}
-    WindowManager(std::initializer_list<Row> ls): rows(ls) {}
-    
+    WindowManager(std::initializer_list<RowElement*> ls): rows(ls) {}
     ~WindowManager() {}
 };
 int startup(){
@@ -149,15 +213,20 @@ int stop(){
 int main(int argc, char const *argv[])
 {
     startup();
-    Row r;
-    auto e = new Element{Window(nullptr), 2};
-    //logvar(e);
-    
-    r.vec.push_back(e);
-    //r.vec.push_back(new Element{Window(nullptr), 2});
-    get_max(x,y);
-    auto i = r.refresh(-1,1 );
-    auto s = (r.vec[0]->window.exists() ? "True":"False" );
+    WindowManager wm;
+    wm.append(new RowElement{Row(), 1});
+    wm.append(new RowElement{Row(), 2});
+    wm.append(new RowElement{Row(), 2});
+
+    wm[0]->row.append(2);
+    wm[0]->row.append(7);
+
+    wm[1]->row.append(6);
+    wm[1]->row.append(2);
+
+    wm[2]->row.append(1);
+
+    wm.refresh();
 
     getch();
     stop();
