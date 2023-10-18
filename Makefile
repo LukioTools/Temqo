@@ -38,3 +38,5 @@ exec:
 .PHONY: build
 build: 
 	@ $(CXX) $(SRC_PATH)/$(TARGET_FILE) $(DEPENDENCIES) $(CXXFLAGS) -o $(BIN_PATH)/$(OUT_NAME)
+
+

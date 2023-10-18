@@ -23,7 +23,6 @@ WINDOW* log_scr = nullptr;
 #define LOG_WIN log_scr
 #include "nc_macros.hpp"
 
-#include "ascii_img.hpp"
 
 class Window
 {
@@ -177,9 +176,9 @@ struct RowElement{
             case RowType::UNDEFINED:
             case RowType::RELATIVE:
                 idk = round((double)((y-abs_area)*size)/relative_percent);
-                logvar(idk)
-                logvar(y-abs_area)
-                logvar((double) size/relative_percent)
+                //logvar(idk)
+                //logvar(y-abs_area)
+                //logvar((double) size/relative_percent)
                 return idk;
             case PERCENT:
                 return round((double) size/100);
@@ -271,6 +270,8 @@ int main(int argc, char const *argv[])
     logvar("\nStarting program\n");
     startup();
     WindowManager wm;
+
+    
     wm.append(new RowElement{Row(), 1, RowType::ABSOLUTE});
     wm.append(new RowElement{Row(), 2, RowType::RELATIVE});
     wm.append(new RowElement{Row(), 1, RowType::ABSOLUTE});
