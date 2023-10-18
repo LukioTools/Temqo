@@ -1,3 +1,4 @@
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <locale>
@@ -16,7 +17,8 @@
 // Define a macro to reset the background color
 #define print_bcolor_reset "\033[0m"
 
-#include "ascii_img.hpp"
+//#include "ascii_img.hpp"
+#include "ascii_img_cl.hpp"
 
 struct RGB{
     u_char r = 0;
@@ -26,19 +28,18 @@ struct RGB{
 
 /*rgb colors*/
 //lenght in bytes
-std::string generate_ansi_row(RGB* colors, size_t lenght){
-    std::string str;
-    ulong sz = std::floor(lenght/3);
-    for (size_t i = 0; i < sz; i++)
+std::string generate_ansi_img(ascii_img::load_image_t* pixels){
+    std::string str = "";
+    for (size_t i = 0; i < pixels->size(); i++)
     {
-        auto ptr = colors[i];
+        auto ptr = pixels->get(i);
         auto r = ptr.r;
         auto g = ptr.g;
         auto b = ptr.b;
-        str = str + print_bcolorstr(r,g,b) + ' ' + print_bcolor_reset;
-        //logv((int)r << ':' << (int) g<<':' << (int) b);
-        //logvar(sz);
-
+        if(i%pixels->x == 0){
+            str += '\n';
+        }
+        str += print_bcolorstr(r,g,b) + ' '  + print_bcolor_reset;
     }
     
     return str;
@@ -49,31 +50,25 @@ int main(int argc, char const *argv[])
     //8
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    int x=10,y=10;
+    //int x=w.ws_col,y=w.ws_row;
+    int x=30,y=30;
  
-    auto chars = ascii_img::load_image("test.png", x, y);
-
-    cimg_library::CImg<u_char> image(chars, x,y,1,3);
-
-    //image.display();
-
     logvar(w.ws_row);
     logvar(w.ws_col);
     logvar(w.ws_xpixel);
     logvar(w.ws_ypixel);
 
 
-    for (size_t i = 0; i < x*y; i+=3)
-    {
-        std::cout << (int) chars[i] <<':' << (int) chars[i+1] <<':' <<(int) chars[i+2] << std::endl;
-        auto img_px = image.data(i);
-        std::cout << "Sample: " << (int) img_px[i] <<':' << (int) img_px[i+1] <<':' <<(int) img_px[i+2] << std::endl;
+    auto beg = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
-    }
-    
-    std::string out = "";
-    out += generate_ansi_row((RGB*)chars, x *y* 3) + '\n';
-    std::cout << out << std::endl;
+
+    ascii_img::load_image_cl("test.png", x, y, 1);
+    //logv(generate_ansi_img(ascii_img::load_image("test_mnm.jpg", x, y, 2)));
+
+    auto end = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+
+
+    logvar(end - beg)
 
 
     return 0;
