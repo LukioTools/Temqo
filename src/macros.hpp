@@ -20,12 +20,18 @@
 #define err(variable) \
     std::cerr << variable << std::endl;
 
+
+#define check_cb(boolean, errormsg, cleanup, errtype) \
+if((boolean)){err(#boolean); cleanup; throw errtype(errormsg);};
+
 //check roots
 #define __check(boolean, errormsg, errtype, invert_bool) \
 if((boolean) != invert_bool){\
     err(#boolean); \
     throw errtype(errormsg);\
 };
+
+
 //positive macros
 #define check(boolean, errormsg) \
     __check(boolean, errormsg, check_err_type, false)
