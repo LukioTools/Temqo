@@ -9,9 +9,11 @@
 #define AUD_BACKEND
 
 #include "macros.hpp"
+#include <regex>
 
 namespace audio
 {
+    std::regex supported_formats("^.{1,250}\\.(mp3|waw|flac)$");
 
     ma_device device;
     ma_decoder decoder;

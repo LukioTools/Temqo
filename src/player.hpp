@@ -1,7 +1,6 @@
 
 
 #include <cstring>
-#include <regex>
 #include <set>
 #if !defined(PLAYER)
 #define PLAYER
@@ -15,7 +14,6 @@
 /**
  * @brief regex for the supported formats
  */
-std::regex supported_formats("^.{1,250}\\.(mp3|waw|flac)$");
 
 
 class Player
@@ -24,14 +22,17 @@ private:
     
 public:
     std::set<std::string> files;
-    size_t index;
-    u_int mod;
-    u_int state;
+    size_t index = 0;
+    u_int mod = 0;
+    u_int state = 0;
 
 
+    void play(){
+        
+    }
 
     void add_file(std::string file){
-        if(!std::regex_match(file, supported_formats)){
+        if(!std::regex_match(file, audio::supported_formats)){
             #ifdef VERBOSE
                 err("Unsupported filetype: " + file);
             #endif
