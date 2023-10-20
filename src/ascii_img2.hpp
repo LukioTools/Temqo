@@ -17,17 +17,11 @@
 #include "../lib/stbi/stb_image.h"
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "../lib/stbi/stb_image_resize2.h"
-
+#include "rgb.hpp"
 
 namespace ascii_img
 {
-    template <typename T = u_char>
-    struct RGB
-    {
-        T r;
-        T g;
-        T b;
-    };
+    
     
     class load_image_t {
         public:

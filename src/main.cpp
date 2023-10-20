@@ -311,7 +311,7 @@ int main(int argc, char const *argv[])
     try{
         p.add("test/");
     }
-    catch(std::runtime_error er){
+    catch(const std::runtime_error& er){
         err(er.what());
     }
 
@@ -336,6 +336,10 @@ int main(int argc, char const *argv[])
 
     std::string input;
 
+    w.refresh();
+    dispe(log_element, "startup time: (%lu)", std::chrono::high_resolution_clock::now().time_since_epoch().count()- startup_time);
+
+
     while (true)
     {
         w.refresh();
@@ -343,16 +347,12 @@ int main(int argc, char const *argv[])
 
         //changes every refresh
         {
-            auto prefix = "\n  ";
-            std::string files =  prefix + p.to_string(prefix); 
             wclear(playlist_element->window);
-            mvwprintw(playlist_element->window, 0, 0, "%s", files.c_str());
+            p.out_ncurses(playlist_element->window); 
             box(playlist_element->window, 0, 0);
             wrefresh(playlist_element->window);
         }
 
-        auto startup_time_e = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-        dispe(log_element, "startup time: (%lu)", startup_time_e- startup_time);
         auto c = wgetch(stdscr);
         
         switch (mode)
@@ -373,13 +373,14 @@ int main(int argc, char const *argv[])
             }
             else
             {
-                wclear(text_element->window);
                 dispe(log_element, "(%i): %c", c, c)
             }
         }
         break;
         case InputMode::TEXT:
         {
+            //keypresses are 258 - 261 (down, up, left, right)
+            //552 jump left, 567 jump right
             switch (c)
             {
             case 10:
@@ -399,6 +400,7 @@ int main(int argc, char const *argv[])
                 break;
 
             case 27:
+                wclear(text_element->window);
                 mode = InputMode::COMMAND;
                 break;
 

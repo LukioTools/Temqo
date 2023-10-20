@@ -1,6 +1,10 @@
 
 
 #include <cstring>
+#ifdef __NCURSES_H
+#include <ncurses.h>
+#endif
+
 #include <set>
 #if !defined(PLAYER)
 #define PLAYER
@@ -9,6 +13,11 @@
 #include <filesystem>
 #include <string>
 #include "audio_backend.hpp"
+
+#include "rgb.hpp"
+
+
+RGB<> hilight_color = {50,50,50};
 
 #define PLAYER_MOD_RECURSIVE 0x00000001
 /**
@@ -26,11 +35,52 @@ public:
     u_int mod = 0;
     u_int state = 0;
 
+#ifdef __NCURSES_H
+
+    void out_ncurses(WINDOW* window, unsigned int x_offset = 2, unsigned int y_offset = 1, unsigned int read_offset = 0, unsigned int max_lines = 0, const char* prefix = "", const char* postfix = ""){
+        auto sz = files.size();
+        auto begin = files.begin();
+        auto end = files.end();
+        size_t index = 0;
+        if(read_offset < sz){
+            std::advance(begin, read_offset);
+        }
+        for (auto str = begin; str != end; str++)
+        {
+            auto i = index + read_offset;
+            if( index > max_lines && max_lines != 0){
+                break;
+            }
+            mvwprintw(window, x_offset, y_offset+index, "%s%s%s", prefix, files., postfix);
+            index++;
+        }
+        return;
+        
+    }
+
+#endif
 
     std::string to_string(const char* sep = "\n "){
         std::string out;
         for(auto str : files){
             out += str + sep;
+        }
+        return out;
+    }
+
+    std::string to_string_ansi_hilighted(const char* sep = "\n "){
+        std::string out;
+        size_t i = 0;
+        logvar(index)
+        for(auto str : files){
+            logvar(i)
+            if(i==index){
+                out += rgb_bgstr(hilight_color) + str + bg_reset + sep;
+            }
+            else{
+                out += str + sep;
+            }
+            i++;
         }
         return out;
     }

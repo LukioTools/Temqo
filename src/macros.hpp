@@ -52,6 +52,22 @@ if((boolean) != invert_bool){\
 #define logvar(variable) \
     LOG_STREAM << #variable": " << variable << std::endl;
 
+//ansi shenanignas
+//dont use this
+#define print_color(r,g,b) "\033[38;2;" << r << ';' << g <<';' << b << 'm'
+// Define a macro for setting the background color with RGB variables
+#define print_bcolor(r, g, b) ("\033[48;2;" + std::to_string(r) + ";" + std::to_string(g) + ";" + std::to_string(b) + "m ").c_str()
+#define print_bcolorstr(r, g, b) ("\033[48;2;" + std::to_string(r) + ";" + std::to_string(g) + ";" + std::to_string(b) + "m ")
+
+#define rgb_bg(rgb) ("\033[48;2;" + std::to_string(rgb.r) + ";" + std::to_string(rgb.g) + ";" + std::to_string(rgb.b) + "m ").c_str()
+#define rgb_bgstr(rgb) ("\033[48;2;" + std::to_string(rgb.r) + ";" + std::to_string(rgb.g) + ";" + std::to_string(rgb.b) + "m ")
+
+
+// Define a macro to reset the background color
+#define print_bcolor_reset "\033[0m"
+#define bg_reset "\033[0m"
+
+
 
 
 #endif // USEFULL_MACROS

@@ -9,22 +9,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define print_color(r,g,b) "\033[38;2;" << r << ';' << g <<';' << b << 'm'
-// Define a macro for setting the background color with RGB variables
-#define print_bcolor(r, g, b) ("\033[48;2;" + std::to_string(r) + ";" + std::to_string(g) + ";" + std::to_string(b) + "m ").c_str()
-#define print_bcolorstr(r, g, b) ("\033[48;2;" + std::to_string(r) + ";" + std::to_string(g) + ";" + std::to_string(b) + "m ")
 
-// Define a macro to reset the background color
-#define print_bcolor_reset "\033[0m"
 
 //#include "ascii_img.hpp"
 #include "ascii_img2.hpp"
 
-struct RGB{
-    u_char r = 0;
-    u_char g = 0;
-    u_char b = 0;
-};
+
 
 /*rgb colors*/
 //lenght in bytes
