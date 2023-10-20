@@ -1,6 +1,8 @@
 
 
+#include <cstddef>
 #include <cstring>
+#include <curses.h>
 #include <ncurses.h>
 
 #include <set>
@@ -14,10 +16,57 @@
 
 #include "rgb.hpp"
 
+//README värit jostai syystä paskana ja ei oo mitään hajua
 
-RGB<> hilight_color = {50,50,50};
+
+struct ncurses_color {
+    short r = 0; //0-1000
+    short g = 0; //0-1000
+    short b = 0; //0-1000
+
+    operator RGB<>(){
+        return {
+            static_cast<unsigned char>(r*255/1000), 
+            static_cast<unsigned char>(g*255/1000), 
+            static_cast<unsigned char>(b*255/1000),
+        };
+    }
+
+    ncurses_color(RGB<> rgb){
+        r = rgb.r/255 * 1000;
+        g = rgb.g/255 * 1000;
+        b = rgb.b/255 * 1000;
+    };
+
+    ncurses_color(short _R, short _G, short _B){
+        r = _R;
+        g = _G;
+        b = _B;
+    };
+};
+
+
+
 
 #define PLAYER_MOD_RECURSIVE 0x00000001
+
+
+//ncurses_color player_normal_foreground(RGB<>{160,160,160});
+//ncurses_color player_normal_background(RGB<>{10,10,10});
+
+#define COLOR_PLAYER_NORMAL_FOREGROUND 21
+#define COLOR_PLAYER_NORMAL_BACKGROUND 23
+
+
+//ncurses_color player_hilight_foreground(RGB<>{200,200, 200});
+//ncurses_color player_hilight_background(RGB<>{75,75,75});
+
+#define COLOR_PLAYER_HILIGHT_FOREGROUND 26
+#define COLOR_PLAYER_HILIGHT_BACKGROUND 29
+
+#define COLOR_PAIR_PLAYER_NORMAL 100
+#define COLOR_PAIR_PLAYER_HILIGHT 101
+
 /**
  * @brief regex for the supported formats
  */
@@ -38,21 +87,40 @@ public:
         auto sz = files.size();
         auto begin = files.begin();
         auto end = files.end();
-        size_t index = 0;
+        size_t idx = 0;
         if(read_offset < sz){
             std::advance(begin, read_offset);
         }
+
         for (auto str = begin; str != end; str++)
         {
-            auto i = index + read_offset;
-            if( index > max_lines && max_lines != 0){
+            if( idx > max_lines && max_lines != 0){
                 break;
             }
-            mvwprintw(window, y_offset+index, x_offset, "%s%s%s", prefix, (*str).c_str(), postfix);
-            index++;
+            auto i = idx + read_offset;
+            //if(i == index){
+            //    wattron(window, COLOR_PAIR(COLOR_PAIR_PLAYER_HILIGHT));
+            //    wattroff(window, COLOR_PAIR(COLOR_PAIR_PLAYER_NORMAL));
+            //}
+            if(i==index){
+                wattron(window, COLOR_PAIR(COLOR_PAIR_PLAYER_HILIGHT));
+            }
+            else{
+                wattron(window, COLOR_PAIR(COLOR_PAIR_PLAYER_NORMAL));
+            }
+
+            mvwprintw(window, y_offset+idx, x_offset, "%s%s%s", prefix, (*str).c_str(), postfix);
+            //if(i == index){
+            //    wattroff(window, COLOR_PAIR(COLOR_PAIR_PLAYER_HILIGHT));
+            //    wattron(window, COLOR_PAIR(COLOR_PAIR_PLAYER_NORMAL));
+            //}
+            idx++;
         }
-        return;
+
+        wattroff(window, COLOR_PAIR(COLOR_PAIR_PLAYER_HILIGHT));
+        wattroff(window, COLOR_PAIR(COLOR_PAIR_PLAYER_NORMAL));
         
+        return;
     }
 
 
@@ -64,22 +132,6 @@ public:
         return out;
     }
 
-    std::string to_string_ansi_hilighted(const char* sep = "\n "){
-        std::string out;
-        size_t i = 0;
-        logvar(index)
-        for(auto str : files){
-            logvar(i)
-            if(i==index){
-                out += rgb_bgstr(hilight_color) + str + bg_reset + sep;
-            }
-            else{
-                out += str + sep;
-            }
-            i++;
-        }
-        return out;
-    }
 
     void play(){
 
@@ -132,12 +184,50 @@ public:
         return *this;
     }
 
+
+    void refresh_colors();
+
+    void init_colors();
     
     Player() {}
     ~Player() {}
 };
 
+ncurses_color player_normal_foreground(1000,1000 ,0);
+ncurses_color player_normal_background(0,0,1000);
 
+ncurses_color player_hilight_foreground(0,0,1000);
+ncurses_color player_hilight_background(1000,0,0);
+
+/*
+void refresh_colors() {
+    init_color(COLOR_PLAYER_NORMAL_BACKGROUND, player_normal_background.r, player_normal_background.g, player_normal_background.b);
+    init_color(COLOR_PLAYER_NORMAL_FOREGROUND, player_normal_foreground.r, player_normal_foreground.g, player_normal_foreground.b);
+
+    init_color(COLOR_PLAYER_HILIGHT_BACKGROUND, player_hilight_background.r, player_hilight_background.g, player_hilight_background.b);
+    init_color(COLOR_PLAYER_HILIGHT_FOREGROUND, player_hilight_foreground.r, player_hilight_foreground.g, player_hilight_foreground.b);
+    
+}
+*/
+
+void init_colors(){
+     // Enable color support
+    logvar(start_color())
+    logvar(can_change_color());
+
+    logvar(COLORS);
+
+    
+
+    init_color(COLOR_PLAYER_NORMAL_FOREGROUND, player_normal_foreground.r, player_normal_foreground.g, player_normal_foreground.b);
+    init_color(COLOR_PLAYER_NORMAL_BACKGROUND, player_normal_background.r, player_normal_background.g, player_normal_background.b);
+
+    init_color(COLOR_PLAYER_HILIGHT_BACKGROUND, player_hilight_background.r, player_hilight_background.g, player_hilight_background.b);
+    init_color(COLOR_PLAYER_HILIGHT_FOREGROUND, player_hilight_foreground.r, player_hilight_foreground.g, player_hilight_foreground.b);
+
+    logvar(init_pair(COLOR_PAIR_PLAYER_NORMAL, COLOR_PLAYER_NORMAL_FOREGROUND, COLOR_PLAYER_NORMAL_BACKGROUND)); 
+    logvar(init_pair(COLOR_PAIR_PLAYER_HILIGHT, COLOR_PLAYER_NORMAL_FOREGROUND, COLOR_PLAYER_NORMAL_BACKGROUND)); 
+}
 #endif // PLAYER
 
 

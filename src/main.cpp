@@ -1,4 +1,5 @@
 
+#include "macros.hpp"
 #include <cstddef>
 #include <cstdio>
 #include <curses.h>
@@ -282,6 +283,7 @@ int startup()
     cbreak();             // Disable line buffering
     noecho();             // Don't echo user input
     keypad(stdscr, TRUE); // Enable function keys
+    init_colors();
     refresh();
     return 0;
 }
@@ -315,8 +317,17 @@ int main(int argc, char const *argv[])
         err(er.what());
     }
 
-
     startup();
+
+
+    logv(player_normal_foreground.r);
+    logv(player_normal_foreground.g);
+    logv(player_normal_foreground.b);
+
+    logv(player_normal_background.r);
+    logv(player_normal_background.g);
+    logv(player_normal_background.b);
+
     wm::WindowManager w;
 
     w.append(new wm::RowElement{wm::Row(), 1, wm::RowType::ABSOLUTE});
@@ -339,6 +350,9 @@ int main(int argc, char const *argv[])
     w.refresh();
     dispe(log_element, "startup time: (%lu)", std::chrono::high_resolution_clock::now().time_since_epoch().count()- startup_time);
 
+
+
+    
 
     while (true)
     {
