@@ -337,7 +337,6 @@ int main(int argc, char const *argv[])
 
     while (true)
     {
-        wclear(stdscr);
         w.refresh();
         refresh();
 
