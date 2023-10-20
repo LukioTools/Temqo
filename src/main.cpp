@@ -304,6 +304,7 @@ Player p;
 
 int main(int argc, char const *argv[])
 {
+    auto startup_time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
     logvar("Starting program");
 
     logvar("test/")
@@ -350,6 +351,8 @@ int main(int argc, char const *argv[])
             wrefresh(playlist_element->window);
         }
 
+        auto startup_time_e = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        dispe(log_element, "startup time: (%lu)", startup_time_e- startup_time);
         auto c = wgetch(stdscr);
         
         switch (mode)
@@ -363,12 +366,14 @@ int main(int argc, char const *argv[])
             else if (c == 'i')
             {
                 mode = InputMode::TEXT;
+                wclear(log_element->window);
                 input = "";
                 dispe(text_element, ":%s", input.c_str())
                 break;
             }
             else
             {
+                wclear(text_element->window);
                 dispe(log_element, "(%i): %c", c, c)
             }
         }

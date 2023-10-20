@@ -6,7 +6,7 @@ CXX ?= g++				# FILL: the compiler
 CFLAGS := -Wall			# FILL: compile flags
 CXXFLAGS := -Wall 		# FILL: compile flags
 
-DEPENDENCIES := -lncurses
+DEPENDENCIES := -lncurses -ldl -lpthread -lm
 
 DBGFLAGS := -g
 COBJFLAGS := $(CFLAGS) -c
