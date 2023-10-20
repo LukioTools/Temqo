@@ -1,9 +1,7 @@
 
 
 #include <cstring>
-#ifdef __NCURSES_H
 #include <ncurses.h>
-#endif
 
 #include <set>
 #if !defined(PLAYER)
@@ -35,7 +33,6 @@ public:
     u_int mod = 0;
     u_int state = 0;
 
-#ifdef __NCURSES_H
 
     void out_ncurses(WINDOW* window, unsigned int x_offset = 2, unsigned int y_offset = 1, unsigned int read_offset = 0, unsigned int max_lines = 0, const char* prefix = "", const char* postfix = ""){
         auto sz = files.size();
@@ -51,14 +48,13 @@ public:
             if( index > max_lines && max_lines != 0){
                 break;
             }
-            mvwprintw(window, x_offset, y_offset+index, "%s%s%s", prefix, files., postfix);
+            mvwprintw(window, y_offset+index, x_offset, "%s%s%s", prefix, (*str).c_str(), postfix);
             index++;
         }
         return;
         
     }
 
-#endif
 
     std::string to_string(const char* sep = "\n "){
         std::string out;
