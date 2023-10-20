@@ -12,16 +12,21 @@
 #include <vector>
 #include <ncurses.h>
 #include <glm/ext.hpp>
-#include <fstream>
 
-std::ofstream different_terminal("/dev/pts/3");
+#define dispw(window, format, ...) \
+    if(window){\
+    wclear(window); \
+    mvwprintw(window, 0, 0, format, __VA_ARGS__); \
+    wrefresh(window);}
 
-WINDOW *log_scr = nullptr;
+#define dispe(element, format, ...) \
+    if(element){\
+    wclear(element->window); \
+    mvwprintw(element->window, 0, 0, format, __VA_ARGS__); \
+    wrefresh(element->window);}
 
-#define LOG_STREAM different_terminal
-#include "macros.hpp"
-#define LOG_WIN log_scr
-#include "nc_macros.hpp"
+
+#include "player.hpp"
 
 namespace wm
 {
@@ -84,6 +89,7 @@ namespace wm
         Window window;
         size_t size = 0;
     };
+
 
     class Row
     {
@@ -240,7 +246,6 @@ namespace wm
             for (auto &&i : rows)
             {
                 size_t height = i->calculate_height(absolute_space, percent);
-                logvar(height);
                 if (height + pos > y)
                 {
                     height = y - pos;
@@ -278,7 +283,6 @@ int startup()
     noecho();             // Don't echo user input
     keypad(stdscr, TRUE); // Enable function keys
     refresh();
-    log_scr = stdscr;
     return 0;
 }
 
@@ -295,9 +299,22 @@ enum InputMode : u_char
 };
 InputMode mode = InputMode::COMMAND;
 
+Player p;
+
+
 int main(int argc, char const *argv[])
 {
-    logvar("\nStarting program\n");
+    logvar("Starting program");
+
+    logvar("test/")
+    try{
+        p.add("test/");
+    }
+    catch(std::runtime_error er){
+        err(er.what());
+    }
+
+
     startup();
     wm::WindowManager w;
 
@@ -309,23 +326,33 @@ int main(int argc, char const *argv[])
 
     // wm[0]->row.append(7);
 
-    w[1]->row.append(6);
+    auto playlist_element = w[1]->row.append(6);
     w[1]->row.append(3);
     w[1]->row.append(2);
 
     wm::Element *text_element = w[2]->row.append(1);
-
-    w.refresh();
+    
 
     std::string input;
 
-    while (auto c = wgetch(stdscr))
+    while (true)
     {
         wclear(stdscr);
         w.refresh();
         refresh();
-        log_scr = log_element->window;
 
+        //changes every refresh
+        {
+            auto prefix = "\n  ";
+            std::string files =  prefix + p.to_string(prefix); 
+            wclear(playlist_element->window);
+            mvwprintw(playlist_element->window, 0, 0, "%s", files.c_str());
+            box(playlist_element->window, 0, 0);
+            wrefresh(playlist_element->window);
+        }
+
+        auto c = wgetch(stdscr);
+        
         switch (mode)
         {
         case InputMode::COMMAND:
@@ -338,12 +365,12 @@ int main(int argc, char const *argv[])
             {
                 mode = InputMode::TEXT;
                 input = "";
-                disp(text_element->window, ":%s", input.c_str());
+                dispe(text_element, ":%s", input.c_str())
                 break;
             }
             else
             {
-                disp(log_scr, "(%i): %c", c, c);
+                dispe(log_element, "(%i): %c", c, c)
             }
         }
         break;
@@ -353,7 +380,7 @@ int main(int argc, char const *argv[])
             {
             case 10:
                 // enter
-                disp(log_scr, "input: %s", input.c_str());
+                dispe(log_element, "input: %s", input.c_str())
 
                 // do something with the input
 
@@ -364,7 +391,7 @@ int main(int argc, char const *argv[])
                 if (input.length() > 0)
                     input.pop_back();
             case 410:
-                disp(text_element->window, ":%s", input.c_str());
+                dispe(text_element, ":%s", input.c_str());
                 break;
 
             case 27:
@@ -373,7 +400,7 @@ int main(int argc, char const *argv[])
 
             default:
                 input += c; // 263 //27???
-                disp(text_element->window, ":%s", input.c_str());
+                dispe(text_element, ":%s", input.c_str());
             }
         }
         }

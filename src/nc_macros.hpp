@@ -1,7 +1,7 @@
 #if !defined(USEFULL_NC_MACROS)
 #define USEFULL_NC_MACROS
 
-#if !defined(LOG_WIN)
+#if !defined(LOG_ELEMENT)
 //#error LOG_WIN needs to be defined before including nc_macros 
 #endif // LOG_WIN
 
@@ -10,20 +10,23 @@
 #include <ncurses.h>
 
 #define nc_logl(format,...) \
-    wclear(LOG_WIN);\
-    wprintw(LOG_WIN, format, __VA_ARGS__); \
-    mvwhline(LOG_WIN, 1, 0, ACS_HLINE, width); \
-    wrefresh(LOG_WIN);
+    if(LOG_ELEMENT){\
+    wclear(LOG_ELEMENT);\
+    wprintw(LOG_ELEMENT->window, format, __VA_ARGS__); \
+    mvwhline(LOG_ELEMENT->window, 1, 0, ACS_HLINE, width); \
+    wrefresh(LOG_ELEMENT->window);}
 
 #define nc_log(format,...) \
-    wclear(LOG_WIN);\
-    wprintw(LOG_WIN, format, __VA_ARGS__); \
-    wrefresh(LOG_WIN);
+    if(LOG_ELEMENT){\
+    wclear(LOG_ELEMENT->window);\
+    wprintw(LOG_ELEMENT->window, format, __VA_ARGS__); \
+    wrefresh(LOG_ELEMENT->window);}
 
 #define disp(window, format, ...) \
+    if(window){\
     wclear(window); \
     mvwprintw(window, 0, 0, format, __VA_ARGS__); \
-    wrefresh(window) \
+    wrefresh(window);}
 
 #define get_max(x, y ) int x, y; getmaxyx(stdscr, y, x)
 

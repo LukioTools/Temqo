@@ -27,8 +27,16 @@ public:
     u_int state = 0;
 
 
+    std::string to_string(const char* sep = "\n "){
+        std::string out;
+        for(auto str : files){
+            out += str + sep;
+        }
+        return out;
+    }
+
     void play(){
-        
+
     }
 
     void add_file(std::string file){

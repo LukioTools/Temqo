@@ -33,7 +33,7 @@ makedir:
 
 .PHONY: exec
 exec:
-	@./$(BIN_PATH)/$(OUT_NAME)
+	@./$(BIN_PATH)/$(OUT_NAME) test/
 	
 .PHONY: build
 build: 

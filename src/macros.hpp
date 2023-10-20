@@ -2,7 +2,9 @@
 #define USEFULL_MACROS
 
 #include <iostream>
-
+#include <fstream>
+std::ofstream different_terminal("/dev/pts/4");
+#define LOG_STREAM different_terminal
 #if !defined(LOG_STREAM) 
 #define LOG_STREAM std::cout
 #endif
